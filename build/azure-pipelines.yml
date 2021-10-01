@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-  - master
+  - main
   
 pool:
   vmImage: ubuntu-latest
@@ -12,6 +12,7 @@ pool:
 variables:
   srcdir: src 
   testdir: test
+  app: $(src)/OfficeOpenXMLEasy
   tests: $(testdir)/test
 
 steps:
@@ -26,6 +27,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
+    projects: '$(src)/*.csproj'
     arguments: '--output $(System.DefaultWorkingDirectory)/publish_output --configuration Release'
     zipAfterPublish: false
     modifyOutputPath: false

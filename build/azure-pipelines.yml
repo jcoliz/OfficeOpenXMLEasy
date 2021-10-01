@@ -1,0 +1,53 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  - master
+  
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  srcdir: src 
+  testdir: test
+  tests: $(testdir)/test
+
+steps:
+- checkout: self
+  submodules: true
+
+- task: CmdLine@2
+  inputs:
+    script: 'git describe --long --always --abbrev=8 > $(srcdir)/version.txt'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    arguments: '--output $(System.DefaultWorkingDirectory)/publish_output --configuration Release'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '$(tests).csproj'
+    arguments: '--collect:"XPlat Code Coverage" --settings:$(testdir)/coverlet.runsettings'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Agent.TempDirectory)/*/coverage.cobertura.xml'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+
+- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+  artifact: drop

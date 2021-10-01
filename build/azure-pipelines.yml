@@ -12,7 +12,7 @@ pool:
 variables:
   srcdir: src 
   testdir: test
-  app: $(src)/OfficeOpenXMLEasy
+  app: $(srcdir)/OfficeOpenXMLEasy
   tests: $(testdir)/test
 
 steps:
@@ -27,7 +27,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '$(app).csproj'
+    projects: '$(srcdir)/*.csproj'
     arguments: '--output $(System.DefaultWorkingDirectory)/publish_output --configuration Release'
     zipAfterPublish: false
     modifyOutputPath: false

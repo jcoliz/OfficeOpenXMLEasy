@@ -27,7 +27,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '$(src)/*.csproj'
+    projects: '$(app).csproj'
     arguments: '--output $(System.DefaultWorkingDirectory)/publish_output --configuration Release'
     zipAfterPublish: false
     modifyOutputPath: false

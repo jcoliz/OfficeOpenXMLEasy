@@ -153,6 +153,20 @@ namespace YoFi.Tests
             WriteThenReadBack(Items);
         }
 
+        enum TestEnum { Invalid = 0, Good, Bad, Ugly };
+
+        [TestMethod]
+        public void SimpleWriteEnum()
+        {
+            // Given: A very simple item w/ boolean member
+            var Items = new List<SimpleItem<TestEnum>>() { new SimpleItem<TestEnum>() { Key = TestEnum.Good } };
+
+            // When: Writing it to a spreadsheet 
+            // And: Reading it back to a spreadsheet
+            // Then: The spreadsheet is valid, and contains the expected item
+            WriteThenReadBack(Items);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(NotImplementedException))]
         public void CustomColumnNullFails()

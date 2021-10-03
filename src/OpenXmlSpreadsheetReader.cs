@@ -251,6 +251,11 @@ namespace jcoliz.OfficeOpenXml.Easy
                         if (!string.IsNullOrEmpty(value))
                             property.SetValue(item, value);
                     }
+                    else if (property.PropertyType.BaseType == typeof(Enum))
+                    {
+                        if (Enum.TryParse(property.PropertyType, kvp.Value, out object value))
+                            property.SetValue(item, value);
+                    }
                 }
             }
 

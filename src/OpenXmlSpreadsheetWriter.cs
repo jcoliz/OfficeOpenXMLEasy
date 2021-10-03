@@ -274,6 +274,11 @@ namespace jcoliz.OfficeOpenXml.Easy
                     Value = ((Boolean)@object) ? "1" : "0";
                     DataType = CellValues.Boolean;
                 }
+                else if (t.BaseType == typeof(Enum))
+                {
+                    Value = @object.ToString();
+                    DataType = CellValues.SharedString;
+                }
             }
 
             var result = new Cell()

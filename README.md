@@ -2,6 +2,8 @@
 
 This is a .NET Standard 2.1 library designed to make it easy to read and write objects from/to Office Open XML spreadsheet documents
 
+[![Build Status](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_apis/build/status/jcoliz.OfficeOpenXMLEasy?branchName=main)](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_build/latest?definitionId=23&branchName=main) ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/jcoliz/OfficeOpenXMLEasy/23)
+
 ## Background
 
 The [Office Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) is very low-level and picky about getting everything just right. I wanted a simpler inferface for my

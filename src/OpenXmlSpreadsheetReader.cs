@@ -87,7 +87,7 @@ namespace jcoliz.OfficeOpenXml.Easy
 
             // There needs to be at least a header and one data value to be useful
             if (maxrow < 2U)
-                return null;
+                return Enumerable.Empty<T>();
 
             // Read row 1 into the headers
             var headers = ReadRow(celldict, 1, maxcol);

@@ -298,5 +298,15 @@ namespace YoFi.Tests
 
             WriteThenReadBack(items);
         }
+
+        [TestMethod]
+        public void ReadWriteEmptyList()
+        {
+            // Given: A spreadsheet with an empty list
+            // When: Reading it in
+            WriteThenReadBack(new List<SimpleItem<string>>());
+
+            // Then: Should succeed, because empty list == empty list
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// <param name="items">Which items to write</param>
         /// <param name="sheetname">Name of sheet. Will be inferred from name of T if not supplied</param>
 
-        void Write<T>(IEnumerable<T> items, string sheetname = null) where T : class;
+        void Serialize<T>(IEnumerable<T> items, string sheetname = null) where T : class;
 
         /// <summary>
         /// The names of all the individual sheets

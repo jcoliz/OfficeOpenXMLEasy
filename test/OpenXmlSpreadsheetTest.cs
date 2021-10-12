@@ -37,7 +37,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
             {
                 using var writer = new SpreadsheetWriter();
                 writer.Open(stream);
-                writer.Write(items, TestContext.TestName);
+                writer.Serialize(items, TestContext.TestName);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -59,7 +59,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
             reader.Open(stream);
             sheets.AddRange(reader.SheetNames);
 
-            return reader.Read<T>(TestContext.TestName).ToList();
+            return reader.Deserialize<T>(TestContext.TestName).ToList();
         }
 
         public void WriteThenReadBack<T>(IEnumerable<T> items, bool writetodisk = true) where T : class, new()

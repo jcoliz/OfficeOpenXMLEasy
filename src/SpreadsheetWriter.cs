@@ -46,7 +46,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// </remarks>
         /// <param name="items">Which items to write</param>
         /// <param name="sheetname">Name of sheet. Will be inferred from name of T if not supplied</param>
-        public void Write<T>(IEnumerable<T> items, string sheetname = null) where T : class
+        public void Serialize<T>(IEnumerable<T> items, string sheetname = null) where T : class
         {
             var name = string.IsNullOrEmpty(sheetname) ? typeof(T).Name : sheetname;
             InsertItems(items, name);

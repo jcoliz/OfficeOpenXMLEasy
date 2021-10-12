@@ -47,7 +47,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// Will use first sheet in workbook if it's not found.</param>
         /// <param name="exceptproperties">Properties to exclude from the import</param>
         /// <returns>Enumerable of <typeparamref name="T"/> items, OR null if  <paramref name="sheetname"/> is not found</returns>
-        public IEnumerable<T> Read<T>(string sheetname = null, IEnumerable<string> exceptproperties = null) where T : class, new()
+        public IEnumerable<T> Deserialize<T>(string sheetname = null, IEnumerable<string> exceptproperties = null) where T : class, new()
         {
             // Fill in default name if not specified
             var name = string.IsNullOrEmpty(sheetname) ? typeof(T).Name : sheetname;

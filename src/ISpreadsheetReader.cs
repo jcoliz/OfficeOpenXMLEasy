@@ -30,7 +30,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// <param name="sheetname">Name of sheet. Will be inferred from name of <typeparamref name="T"/> if not supplied</param>
         /// <param name="exceptproperties">Properties to exclude from the import</param>
         /// <returns>Enumerable of <typeparamref name="T"/> items, OR null if  <paramref name="sheetname"/> is not found</returns>
-        IEnumerable<T> Read<T>(string sheetname = null, IEnumerable<string> exceptproperties = null) where T : class, new();
+        IEnumerable<T> Deserialize<T>(string sheetname = null, IEnumerable<string> exceptproperties = null) where T : class, new();
 
         /// <summary>
         /// The names of all the individual sheets

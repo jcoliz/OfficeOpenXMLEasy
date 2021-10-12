@@ -7,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace jcoliz.OfficeOpenXml.Easy
+namespace jcoliz.OfficeOpenXml.Serializer
 {
     /// <summary>
     /// Write spreadsheets from memory, using Office OpenXML

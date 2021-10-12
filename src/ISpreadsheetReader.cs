@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace jcoliz.OfficeOpenXml.Easy
+namespace jcoliz.OfficeOpenXml.Serializer
 {
     /// <summary>
     /// Interface for spreadsheet reading

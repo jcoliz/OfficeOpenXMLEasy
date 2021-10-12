@@ -1,12 +1,11 @@
-﻿using jcoliz.OfficeOpenXml.Easy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace YoFi.Tests
+namespace jcoliz.OfficeOpenXml.Serializer.Tests
 {
     [TestClass]
     public class NewSpreadsheetsTest

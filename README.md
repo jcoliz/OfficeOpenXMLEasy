@@ -1,6 +1,6 @@
 # Office Open XML Serializer
 
-This is a .NET Standard 2.1 library designed to make it easy to serialize objects from/to Office Open XML spreadsheet documents
+This is a .NET Standard 2.1 library designed to make it easy to serialize C# objects from/to Office Open XML spreadsheet documents.
 
 [![Build Status](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_apis/build/status/jcoliz.OfficeOpenXMLEasy?branchName=main)](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_build/latest?definitionId=23&branchName=main) ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/jcoliz/OfficeOpenXMLEasy/23)
 
@@ -14,7 +14,7 @@ applications which only needed to read and write objects from and to a spreadshe
 ### Namespace
 
 ```c#
-using jcoliz.OpenOfficeXml.Easy;
+using jcoliz.OpenOfficeXml.Serializer;
 ```
 
 ### Simple Writing
@@ -22,9 +22,9 @@ using jcoliz.OpenOfficeXml.Easy;
 ```c#
 void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
 {
-    using var writer = new OpenXmlSpreadsheetWriter();
+    using var writer = new SpreadsheetSerializer();
     writer.Open(stream);
-    writer.Write(items);
+    writer.Serialize(items);
 }
 ```
 
@@ -33,9 +33,9 @@ void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
 ```c#
 IEnumerable<T> ReadFromSpreadsheet<T>(Stream stream) where T : class, new()
 {
-    using var reader = new OpenXmlSpreadsheetReader();
+    using var reader = new SpreadsheetDeserializer();
     reader.Open(stream);
-    return reader.Read<T>().ToList();
+    return reader.Deserialize<T>().ToList();
 }
 ```
 
@@ -44,7 +44,7 @@ IEnumerable<T> ReadFromSpreadsheet<T>(Stream stream) where T : class, new()
 Select the sheet name to write into
 
 ```c#
-writer.Write(items, "MySheet");
+writer.Serialize(items, "MySheet");
 ```
 
 Discover the sheets available in a spreadsheet
@@ -54,17 +54,17 @@ foreach(var sheet in reader.SheetNames)
     Console.WriteLine(sheet);
 ```
 
-Choose which to read from
+Choose which to deserialize from
 
 ```c#
-reader.Read<T>("MySheet")
+reader.Deserialize<T>("MySheet")
 ```
 
-### Exclude Properties on Read
+### Exclude Properties on Deserialize
 
 You may want to avoid reading in certain properties. For example, I typically don't want my Entity Framework ID's
 imported from spreadsheets.
 
 ```c#
-var items = reader.Read<T>(exceptproperties: new string[] { "ID" });
+var items = reader.Deserialize<T>(exceptproperties: new string[] { "ID" });
 ```

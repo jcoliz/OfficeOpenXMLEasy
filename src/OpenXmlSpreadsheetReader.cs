@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace jcoliz.OfficeOpenXml.Easy
+namespace jcoliz.OfficeOpenXml.Serializer
 {
     /// <summary>
     /// Read spreadsheets into memory, using Office OpenXML

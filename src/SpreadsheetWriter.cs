@@ -17,7 +17,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
     /// 
     /// Originally, I used EPPlus. However, that library is commercial use and closed source.
     /// </remarks>
-    public class SpreadsheetSerializer : ISpreadsheetWriter
+    public class SpreadsheetWriter : ISpreadsheetWriter
     {
         #region ISpreadsheetWriter (Public Interface)
 

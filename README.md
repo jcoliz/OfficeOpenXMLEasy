@@ -22,7 +22,7 @@ using jcoliz.OpenOfficeXml.Serializer;
 ```c#
 void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
 {
-    using var writer = new SpreadsheetSerializer();
+    using var writer = new SpreadsheetWriter();
     writer.Open(stream);
     writer.Serialize(items);
 }
@@ -33,7 +33,7 @@ void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
 ```c#
 IEnumerable<T> ReadFromSpreadsheet<T>(Stream stream) where T : class, new()
 {
-    using var reader = new SpreadsheetDeserializer();
+    using var reader = new SpreadsheetReader();
     reader.Open(stream);
     return reader.Deserialize<T>().ToList();
 }

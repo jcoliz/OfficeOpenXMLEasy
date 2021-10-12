@@ -35,7 +35,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         void WhenWritingToSpreadsheet<T>(Stream stream,IEnumerable<T> items,bool writetodisk = true) where T: class
         {
             {
-                using var writer = new OpenXmlSpreadsheetWriter();
+                using var writer = new SpreadsheetSerializer();
                 writer.Open(stream);
                 writer.Write(items, TestContext.TestName);
             }
@@ -170,7 +170,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         [ExpectedException(typeof(NotImplementedException))]
         public void CustomColumnNullFails()
         {
-            var writer = new OpenXmlSpreadsheetWriter();
+            var writer = new SpreadsheetSerializer();
             var sheets = writer.SheetNames;
         }
 
@@ -283,7 +283,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         [ExpectedException(typeof(NotImplementedException))]
         public void SheetNamesFails()
         {
-            var writer = new OpenXmlSpreadsheetWriter();
+            var writer = new SpreadsheetSerializer();
             var sheets = writer.SheetNames;
         }
 

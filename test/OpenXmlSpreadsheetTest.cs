@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace jcoliz.OfficeOpenXml.Serializer.Tests
 {
     [TestClass]
-    public class NewSpreadsheetsTest
+    public class SpreadsheetSerializerTests
     {
         public class SimpleItem<T>
         {

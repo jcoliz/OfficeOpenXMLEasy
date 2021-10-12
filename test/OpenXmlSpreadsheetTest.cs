@@ -55,7 +55,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         private IEnumerable<T> WhenReadAsSpreadsheet<T>(MemoryStream stream, List<string> sheets) where T : class, new()
         {
             stream.Seek(0, SeekOrigin.Begin);
-            using var reader = new OpenXmlSpreadsheetReader();
+            using var reader = new SpreadsheetReader();
             reader.Open(stream);
             sheets.AddRange(reader.SheetNames);
 

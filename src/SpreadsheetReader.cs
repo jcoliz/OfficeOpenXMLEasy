@@ -10,13 +10,13 @@ using System.Text.RegularExpressions;
 namespace jcoliz.OfficeOpenXml.Serializer
 {
     /// <summary>
-    /// Read spreadsheets into memory, using Office OpenXML
+    /// Reader to deserialize objects from spreadsheets, using Office OpenXML
     /// </summary>
     /// <see href="https://github.com/OfficeDev/Open-XML-SDK"/>
     /// <remarks>
     /// Originally, I used EPPlus. However, that library has terms for commercial use.
     /// </remarks>
-    public class OpenXmlSpreadsheetReader : ISpreadsheetReader
+    public class SpreadsheetReader : ISpreadsheetReader
     {
         #region ISpreadsheetReader (Public Interface)
 

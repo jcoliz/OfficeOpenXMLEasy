@@ -59,7 +59,7 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
             reader.Open(stream);
             sheets.AddRange(reader.SheetNames);
 
-            return reader.Deserialize<T>(TestContext.TestName).ToList();
+            return reader.Deserialize<T>(TestContext.TestName);
         }
 
         public void WriteThenReadBack<T>(IEnumerable<T> items, bool writetodisk = true) where T : class, new()

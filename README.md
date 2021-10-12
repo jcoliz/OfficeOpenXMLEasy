@@ -17,7 +17,7 @@ applications which only needed to read and write objects from and to a spreadshe
 using jcoliz.OpenOfficeXml.Serializer;
 ```
 
-### Simple Writing
+### Simple Serialization
 
 ```c#
 void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
@@ -28,14 +28,14 @@ void WriteToSpreadsheet<T>(Stream stream, IEnumerable<T> items) where T: class
 }
 ```
 
-### Simple Reading
+### Simple Deserialization
 
 ```c#
 IEnumerable<T> ReadFromSpreadsheet<T>(Stream stream) where T : class, new()
 {
     using var reader = new SpreadsheetReader();
     reader.Open(stream);
-    return reader.Deserialize<T>().ToList();
+    return reader.Deserialize<T>();
 }
 ```
 
@@ -62,7 +62,7 @@ reader.Deserialize<T>("MySheet")
 
 ### Exclude Properties on Deserialize
 
-You may want to avoid reading in certain properties. For example, I typically don't want my Entity Framework ID's
+You may want to avoid reading in certain properties. For example, I typically don't want Entity Framework IDs
 imported from spreadsheets.
 
 ```c#

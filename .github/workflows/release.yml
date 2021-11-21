@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GITVERSION: ${GITHUB_REF#refs/tags/}
+      RELEASETAG: "${GITHUB_REF#refs/tags/}"
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
@@ -23,6 +23,6 @@ jobs:
       - name: Build and Test
         run: dotnet test /p:Configuration=Release --verbosity normal
       - name: Pack
-        run: dotnet pack /p:Configuration=Release /p:ReleaseNotes="${{ github.event.release.body }}" /p:ReleaseVersion=$GITVERSION --no-build --verbosity normal
+        run: dotnet pack /p:Configuration=Release /p:ReleaseNotes="${{ github.event.release.body }}" /p:ReleaseVersion=$RELEASETAG --no-build --verbosity normal
       - name: Publish NuGets (if this version not published before)
         run: dotnet nuget push **\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_TOKEN_2022 }} --skip-duplicate

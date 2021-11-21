@@ -8,8 +8,8 @@ This is a .NET Standard 2.1 library designed to make it easy to serialize C# obj
 
 ## Background
 
-The [Office Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) is very low-level and picky about getting everything just right. I wanted a simpler inferface for my
-applications which only needed to read and write objects from and to a spreadsheet.
+The [Office Open XML SDK](https://github.com/OfficeDev/Open-XML-SDK) is very low-level and picky about getting everything just right. 
+I wanted a simpler inferface for my applications which only needed to read and write objects from and to a spreadsheet.
 
 ## Usage
 

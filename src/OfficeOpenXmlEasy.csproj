@@ -6,6 +6,7 @@
     <Description>This is a .NET Standard library designed to make it easy to serialize C# objects from/to Office Open XML spreadsheet documents.</Description>
     <PackageProjectUrl>https://github.com/jcoliz/OfficeOpenXMLEasy</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReleaseNotes>$(ReleaseBody)</PackageReleaseNotes>
     <PackageReadmeFile>PackageReadmeFile.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/jcoliz/OfficeOpenXMLEasy.git</RepositoryUrl>
     <RepositoryCommit>$(GitSha)</RepositoryCommit>

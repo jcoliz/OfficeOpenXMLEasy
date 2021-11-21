@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <PackageId>OfficeOpenXmlEasy</PackageId>
+    <PackageId>jcoliz.OpenOfficeXml.Serializer</PackageId>
     <Version>$(Version)</Version>
     <Description>This is a .NET Standard library designed to make it easy to serialize C# objects from/to Office Open XML spreadsheet documents.</Description>
     <Authors>James Coliz</Authors>

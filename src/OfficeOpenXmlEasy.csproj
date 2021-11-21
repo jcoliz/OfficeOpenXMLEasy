@@ -5,7 +5,7 @@
     <Version>$(Version)</Version>
     <Description>This is a .NET Standard library designed to make it easy to serialize C# objects from/to Office Open XML spreadsheet documents.</Description>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>PackageReadmeFile.md</PackageReadmeFile>
     <Authors>James Coliz</Authors>
     <Company>jcoliz</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.1" />
     <None Include="..\docs\images\icon.png" Pack="true" PackagePath="\"/>    
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>    
+    <None Include="..\docs\PackageReadmeFile.md" Pack="true" PackagePath="\"/>    
   </ItemGroup>
 
 </Project>

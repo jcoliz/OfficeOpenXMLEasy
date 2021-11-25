@@ -9,6 +9,11 @@ using System.Text.RegularExpressions;
 
 namespace jcoliz.OfficeOpenXml.Serializer
 {
+    public interface ISharedStringMap
+    {
+        string FindSharedStringItem(string id);
+    }
+
     /// <summary>
     /// Reader to deserialize objects from spreadsheets, using Office OpenXML
     /// </summary>
@@ -16,7 +21,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
     /// <remarks>
     /// Originally, I used EPPlus. However, that library has terms for commercial use.
     /// </remarks>
-    public class SpreadsheetReader : ISpreadsheetReader
+    public class SpreadsheetReader : ISpreadsheetReader, ISharedStringMap
     {
         #region ISpreadsheetReader (Public Interface)
 
@@ -73,70 +78,35 @@ namespace jcoliz.OfficeOpenXml.Serializer
             var sheet = matching.Single();
             WorksheetPart worksheetPart = (WorksheetPart)(workbookpart.GetPartById(sheet.Id));
 
-            // Determine the extents of the cells contained within in this sheet.
-            // Transform cells into a usable dictionary
-            var celldict = worksheetPart.Worksheet.Descendants<Cell>().ToDictionary(x => x.CellReference.Value, x => x);
+            // Transform cells into a repository we can work with more easily
+            var cells = new CellRepository(worksheetPart.Worksheet.Descendants<Cell>(),this);
+            
+            // Extract the headers
+            var headers = cells.Rows().First().Columns().ToDictionary(c => c.Column, c => c.Value);
 
-            // Determine extent of cells
-
-            // Note that rows are 1-based, and columns are 0-based, to make them easier to convert to/from letters
-            var regex = new Regex(@"([A-Za-z]+)(\d+)");
-            var matches = celldict.Keys.Select(x => regex.Match(x).Groups);
-            var maxrow = matches.Max(x => Convert.ToInt32(x[2].Value));
-            var maxcol = matches.Max(x => ColNumberFor(x[1].Value));
-
-            // There needs to be at least a header and one data value to be useful
-            if (maxrow < 2U)
-                return Enumerable.Empty<T>();
-
-            // Read row 1 into the headers
-            var headers = ReadRow(celldict, 1, maxcol);
-
-            // Read rows 2+ into the result items
-            return Enumerable.Range(2, maxrow - 1).Select(r =>
-                CreateFromDictionary<T>
+            // For each data row
+            var result = cells.Rows().Skip(1).Select
+            (
+                // Create a resulting item
+                r => CreateFromDictionary<T>
                 (
-                    ReadRow(celldict, (uint)r, maxcol)
-                        .Where(
-                            x => exceptproperties?.Any(p => p == headers[x.Key]) != true
-                            &&
-                            headers.ContainsKey(x.Key)
-                            &&
-                            !string.IsNullOrEmpty(headers[x.Key])
+                    // From a mapping of header to column value
+                    r.Columns()
+                        .Where
+                        (
+                            c => !string.IsNullOrEmpty(headers.GetValueOrDefault(c.Column))
+                            && exceptproperties?.Any(p => p == headers[c.Column]) != true 
                         )
-                        .ToDictionary(x => headers[x.Key], x => x.Value)
-                 )
+                        .ToDictionary(c=>headers[c.Column], c=>c.Value)
+                )
             );
+
+            return result;
         }
 
         #endregion
 
         #region Internals
-
-        /// <summary>
-        /// Read a single row out of a sheet
-        /// </summary>
-        /// <param name="cells">All cells in sheet</param>
-        /// <param name="row">Which row, from 1</param>
-        /// <param name="maxcol">Largest valid column number, from 0</param>
-        /// <returns>Cell values mapped to column number where found, from 0</returns>
-        private Dictionary<uint, string> ReadRow(Dictionary<string, Cell> cells, uint row, uint maxcol) =>
-            Enumerable.Range(0, (int)maxcol + 1).ToDictionary(c => (uint)c, c =>
-                {
-                    var value = string.Empty;
-                    var celref = ColNameFor((uint)c) + row;
-                    var cell = cells.ContainsKey(celref) ? cells[celref] : null;
-                    if (null != cell)
-                    {
-                        if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-                            value = FindSharedStringItem(cell.CellValue?.Text);
-
-                        else if (!string.IsNullOrEmpty(cell.CellValue?.Text))
-                            value = cell.CellValue.Text;
-                    }
-                    return value;
-                });
-
         /// <summary>
         /// Look up a string from the shared string table part
         /// </summary>
@@ -145,7 +115,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// Throws if there is no string table, or if the string can't be found.
         /// </exception>
         /// <returns>The string found</returns>
-        private string FindSharedStringItem(string id)
+        public string FindSharedStringItem(string id)
         {
             var shareStringPart = spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault();
 
@@ -243,35 +213,6 @@ namespace jcoliz.OfficeOpenXml.Serializer
             }
 
             return item;
-        }
-
-        /// <summary>
-        /// Convert string column name to integer index
-        /// </summary>
-        /// <param name="colname">Base 26-style column name, e.g. "AF"</param>
-        /// <returns>0-based integer column number, e.g. "A" = 0</returns>
-        private static uint ColNumberFor(IEnumerable<char> colname)
-        {
-            if (colname == null || !colname.Any())
-                return 0;
-
-            var last = (uint)colname.Last() - (uint)'A';
-            var others = ColNumberFor(colname.SkipLast(1));
-
-            return last + 26U * (1 + others);
-        }
-
-        /// <summary>
-        /// Convert column number to spreadsheet name
-        /// </summary>
-        /// <param name="colnumber">0-based integer column number, e.g. "A" = 0</param>
-        /// <returns>Base 26-style column name, e.g. "AF"</returns>
-        private static string ColNameFor(uint number)
-        {
-            if (number < 26)
-                return new string(new char[] { (char)((int)'A' + number) });
-            else
-                return ColNameFor((number / 26) - 1) + ColNameFor(number % 26);
         }
 
         #endregion

@@ -93,31 +93,20 @@ namespace jcoliz.OfficeOpenXml.Serializer
             var headers = ReadRow(celldict, 1, maxcol);
 
             // Read rows 2+ into the result items
-            var result = new List<T>();
-            for (uint row = 2; row <= maxrow; row++)
-            {
-                // Extract raw row data
-                var rowdata = ReadRow(celldict, row, maxcol);
-
-                // Transform keys based on headers
-                // Removing properties we don't want
-                var line = rowdata
-                    .Where(
-                        x => exceptproperties?.Any(p=>p == headers[x.Key]) != true
-                        &&
-                        headers.ContainsKey(x.Key)
-                        &&
-                        ! string.IsNullOrEmpty(headers[x.Key])
-                    )
-                    .ToDictionary(x => headers[x.Key], x => x.Value);
-
-                // Transform into result object
-                var item = CreateFromDictionary<T>(dictionary: line);
-
-                result.Add(item);
-            }
-
-            return result;
+            return Enumerable.Range(2, maxrow - 1).Select(r =>
+                CreateFromDictionary<T>
+                (
+                    ReadRow(celldict, (uint)r, maxcol)
+                        .Where(
+                            x => exceptproperties?.Any(p => p == headers[x.Key]) != true
+                            &&
+                            headers.ContainsKey(x.Key)
+                            &&
+                            !string.IsNullOrEmpty(headers[x.Key])
+                        )
+                        .ToDictionary(x => headers[x.Key], x => x.Value)
+                 )
+            );
         }
 
         #endregion

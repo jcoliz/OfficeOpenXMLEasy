@@ -32,24 +32,28 @@ namespace jcoliz.OfficeOpenXml.Serializer
             MaxCols = matches.Max(x => ColNumberFor(x[1].Value));
         }
 
-        public IEnumerable<CellRepositoryRow> Rows()
-        {
-            return Enumerable.Range(1, _maxrow).Select(r => new CellRepositoryRow(this, r));
-        }
+        public IEnumerable<RepositoryRow> Rows() =>
+            Enumerable.Range(1, _maxrow).Select(r => new RepositoryRow(this, r));
 
-        public string this[uint col, int row]
+        /// <summary>
+        /// Find a single cell value in the repository
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public RepositoryValue this[uint col, int row]
         {
             get
             {
-                string result = null;
+                var result = new RepositoryValue() { Column = col };
                 var cell = _dictionary.GetValueOrDefault(ColNameFor(col) + row);
                 if (null != cell)
                 {
                     if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-                        result = _stringMap.FindSharedStringItem(cell.CellValue?.Text);
+                        result.Value = _stringMap.FindSharedStringItem(cell.CellValue?.Text);
 
                     else if (!string.IsNullOrEmpty(cell.CellValue?.Text))
-                        result = cell.CellValue.Text;
+                        result.Value = cell.CellValue.Text;
                 }
                 return result;
             }
@@ -83,10 +87,9 @@ namespace jcoliz.OfficeOpenXml.Serializer
             else
                 return ColNameFor((number / 26) - 1) + ColNameFor(number % 26);
         }
-
     }
 
-    internal class CellRepositoryRow
+    internal class RepositoryRow
     {
         /// <summary>
         /// Which repository contains this row
@@ -98,21 +101,38 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// </summary>
         private readonly int _row;
 
-        public CellRepositoryRow(CellRepository repository, int row)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="repository">Which repository holds this row</param>
+        /// <param name="row">Which row# are we, starting from 1</param>
+        public RepositoryRow(CellRepository repository, int row)
         {
             _repository = repository;
             _row = row;
         }
 
-        public IEnumerable<CellRepositoryValue> Columns()
-        {
-            return Enumerable.Range(0, (int)_repository.MaxCols + 1).Select(x => new CellRepositoryValue() { Column = (uint)x, Value = _repository[(uint)x, _row] });
-        }
+        /// <summary>
+        /// Obtain all the cell values within the columns
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RepositoryValue> Columns() =>
+            Enumerable.Range(0, (int)_repository.MaxCols + 1).Select(x => _repository[(uint)x, _row]);
     }
 
-    internal class CellRepositoryValue
+    /// <summary>
+    /// A single cell value
+    /// </summary>
+    internal class RepositoryValue
     {
+        /// <summary>
+        /// Which column was the value found in, starting from 0
+        /// </summary>
         public uint Column { get; set; }
+        
+        /// <summary>
+        /// What value was found in the column
+        /// </summary>
         public string Value { get; set; }
     }
 }

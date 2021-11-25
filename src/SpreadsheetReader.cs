@@ -9,11 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace jcoliz.OfficeOpenXml.Serializer
 {
-    public interface ISharedStringMap
-    {
-        string FindSharedStringItem(string id);
-    }
-
     /// <summary>
     /// Reader to deserialize objects from spreadsheets, using Office OpenXML
     /// </summary>
@@ -79,7 +74,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
             WorksheetPart worksheetPart = (WorksheetPart)(workbookpart.GetPartById(sheet.Id));
 
             // Transform cells into a repository we can work with more easily
-            var strings = new StringMap(spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault());
+            var strings = new SharedStringMap(spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault());
             var cells = new CellRepository(worksheetPart.Worksheet.Descendants<Cell>(),strings);
             
             // Extract the headers
@@ -107,44 +102,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
 
         #endregion
 
-        #region Internals
-
-        class StringMap : ISharedStringMap
-        {
-            private readonly SharedStringTable _table;
-
-            public StringMap(SharedStringTablePart part)
-            {
-                if (null == part)
-                    throw new ApplicationException("Shared string cell found, but no shared string table!");
-
-                _table = part.SharedStringTable;
-
-            }
-
-            /// <summary>
-            /// Look up a string from the shared string table part
-            /// </summary>
-            /// <param name="id">ID for the string, 0-based integer in string form</param>
-            /// <exception cref="ApplicationException">
-            /// Throws if there is no string table, or if the string can't be found.
-            /// </exception>
-            /// <returns>The string found</returns>
-            public string FindSharedStringItem(string id)
-            {
-                var found = _table.Skip(Convert.ToInt32(id));
-                var result = found.FirstOrDefault()?.InnerText;
-
-                if (null == result)
-                    throw new ApplicationException($"Unable to find shared string reference for id {id}!");
-
-                return result;
-            }
-        }
-        #endregion
-
         #region Static Internals
-
         /// <summary>
         /// Create an object from a <paramref name="dictionary"/> of property values
         /// </summary>

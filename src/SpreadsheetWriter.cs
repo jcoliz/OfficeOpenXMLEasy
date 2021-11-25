@@ -138,25 +138,25 @@ namespace jcoliz.OfficeOpenXml.Serializer
             Worksheet worksheet = worksheetPart.Worksheet;
             SheetData sheetData = worksheet.GetFirstChild<SheetData>();
 
-            var rows = new List<Row>();
+            uint rowindex_internal = rowindex;
 
-            foreach (var or in objectrows)
-            {
-                uint rowlocal = rowindex;
-                int colindex = 0;
-                var row =
-                    new Row
+            sheetData.Append
+            (
+                objectrows.Select(objrow =>
+                {
+                    int colindex = 0;
+                    return new Row
                     (
-                        or.Select(o => MakeCellFrom(o, ColNameFor(colindex++) + rowlocal)).Where(c => c.DataType.Value != CellValues.Error)
+                        objrow.Select(o => MakeCellFrom(o, ColNameFor(colindex++) + rowindex_internal)).Where(c => c.DataType.Value != CellValues.Error)
                     )
                     {
-                        RowIndex = rowindex++,
+                        RowIndex = rowindex_internal++,
                         Spans = new ListValue<StringValue>()
                     };
-                rows.Add(row);
-            }
+                })
+            );
 
-            sheetData.Append(rows);
+            rowindex = rowindex_internal;
         }
 
         /// <summary>

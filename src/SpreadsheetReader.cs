@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace jcoliz.OfficeOpenXml.Serializer
 {
@@ -46,7 +45,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// <param name="sheetname">Name of sheet. Will be inferred from name of <typeparamref name="T"/> if not supplied.
         /// Will use first sheet in workbook if it's not found.</param>
         /// <param name="exceptproperties">Properties to exclude from the import</param>
-        /// <returns>Enumerable of <typeparamref name="T"/> items, OR null if  <paramref name="sheetname"/> is not found</returns>
+        /// <returns>Enumerable of <typeparamref name="T"/> items, OR null if <paramref name="sheetname"/> is not found</returns>
         public IEnumerable<T> Deserialize<T>(string sheetname = null, IEnumerable<string> exceptproperties = null) where T : class, new()
         {
             // Fill in default name if not specified
@@ -77,8 +76,8 @@ namespace jcoliz.OfficeOpenXml.Serializer
             var strings = new SharedStringMap(spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault());
             var cells = new CellRepository(worksheetPart.Worksheet.Descendants<Cell>(),strings);
             
-            // Extract the headers
-            var headers = cells.Rows().First().Columns().ToDictionary(c => c.Column, c => c.Value);
+            // First row are the headers
+            var headers = cells.Rows().First();
 
             // For each data row
             var result = cells.Rows().Skip(1).Select
@@ -86,14 +85,16 @@ namespace jcoliz.OfficeOpenXml.Serializer
                 // Create a resulting item
                 r => CreateFromDictionary<T>
                 (
-                    // From a mapping of header to column value
+                    // From a mapping of header value in this column to row value in this column
                     r.Columns()
-                        .Where
-                        (
-                            c => !string.IsNullOrEmpty(headers.GetValueOrDefault(c.Column))
-                            && exceptproperties?.Any(p => p == headers[c.Column]) != true 
-                        )
-                        .ToDictionary(c=>headers[c.Column], c=>c.Value)
+                        .Where(c => 
+                            c != null 
+                            && 
+                            headers[c.Column] != null
+                            && 
+                            !(exceptproperties?.Contains(headers[c.Column].Value) ?? false)
+                            )
+                        .ToDictionary(c=>headers[c.Column].Value, c=>c.Value)
                 )
             );
 
@@ -115,20 +116,12 @@ namespace jcoliz.OfficeOpenXml.Serializer
 
             foreach (var kvp in dictionary)
             {
+                // Find the property named {key}
                 var property = typeof(T).GetProperties().Where(x => x.Name == kvp.Key).SingleOrDefault();
+
+                // Only operate on it if it has a setter
                 if (null != property?.SetMethod)
                 {
-                    // Note this excludes typeof(int), which excludes importing
-                    // the ID. So if you re-import items you already have, the IDs
-                    // will be stripped and ignored. Generally I think that's
-                    // good behaviour, but in other implementations, I have done
-                    // it the other way where duplicating the ID is a method of
-                    // bulk editing.
-                    //
-                    // ... And this runs up against Pbi #870 :) I now want to
-                    // export TransactionID for splits. This means I also need to
-                    // export ID for Transactions, so the TransactionID has meaning!
-
                     if (property.PropertyType == typeof(DateTime))
                     {
                         // By the time datetimes get here, we expect them to be OADates.
@@ -136,10 +129,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         // be adjusted before now.
 
                         if ( double.TryParse(kvp.Value, out double dvalue) )
-                        {
-                            var value = DateTime.FromOADate(dvalue);
-                            property.SetValue(item, value);
-                        }
+                            property.SetValue(item, DateTime.FromOADate(dvalue));
                     }
                     else if (property.PropertyType == typeof(int))
                     {
@@ -159,11 +149,8 @@ namespace jcoliz.OfficeOpenXml.Serializer
 
                         if (int.TryParse(kvp.Value, out int intvalue))
                             property.SetValue(item, intvalue != 0);
-                        else
-                        {
-                            if (bool.TryParse(kvp.Value, out bool value))
-                                property.SetValue(item, value);
-                        }
+                        else if (bool.TryParse(kvp.Value, out bool value))
+                            property.SetValue(item, value);
                     }
                     else if (property.PropertyType == typeof(string))
                     {

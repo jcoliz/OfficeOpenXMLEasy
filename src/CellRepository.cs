@@ -10,6 +10,11 @@ namespace jcoliz.OfficeOpenXml.Serializer
     /// <summary>
     /// Holds a table of OpenXml cells in a format we can easily iterate over
     /// </summary>
+    /// <remarks>
+    /// Note that this works as a fully rectangular 2D table. If one row has
+    /// 25 columns, then ALL rows have 25 columns, even if the last 24 are
+    /// nulls.
+    /// </remarks>
     internal class CellRepository
     {
         private readonly Dictionary<string, Cell> _dictionary;
@@ -18,6 +23,11 @@ namespace jcoliz.OfficeOpenXml.Serializer
 
         public uint MaxCols { get; private set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="cells">Which cells to work with</param>
+        /// <param name="stringMap">Where to get strings</param>
         public CellRepository(IEnumerable<Cell> cells, ISharedStringMap stringMap)
         {
             _dictionary = cells.ToDictionary(x => x.CellReference.Value, x => x);
@@ -28,10 +38,18 @@ namespace jcoliz.OfficeOpenXml.Serializer
             // Note that rows are 1-based, and columns are 0-based, to make them easier to convert to/from letters
             var regex = new Regex(@"([A-Za-z]+)(\d+)");
             var matches = _dictionary.Keys.Select(x => regex.Match(x).Groups);
+
+            // Rows are the second matching group in the cell identifier
             _maxrow = matches.Max(x => Convert.ToInt32(x[2].Value));
+
+            // Columns are the first matching group
             MaxCols = matches.Max(x => ColNumberFor(x[1].Value));
         }
 
+        /// <summary>
+        /// All the rows in this table of cells
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<RepositoryRow> Rows() =>
             Enumerable.Range(1, _maxrow).Select(r => new RepositoryRow(this, r));
 
@@ -45,15 +63,15 @@ namespace jcoliz.OfficeOpenXml.Serializer
         {
             get
             {
-                var result = new RepositoryValue() { Column = col };
+                RepositoryValue result = null; 
                 var cell = _dictionary.GetValueOrDefault(ColNameFor(col) + row);
                 if (null != cell)
                 {
                     if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-                        result.Value = _stringMap.FindSharedStringItem(cell.CellValue?.Text);
+                        result = new RepositoryValue() { Column = col, Value = _stringMap.FindSharedStringItem(cell.CellValue?.Text) };
 
                     else if (!string.IsNullOrEmpty(cell.CellValue?.Text))
-                        result.Value = cell.CellValue.Text;
+                        result = new RepositoryValue() { Column = col, Value = cell.CellValue.Text };
                 }
                 return result;
             }
@@ -89,6 +107,9 @@ namespace jcoliz.OfficeOpenXml.Serializer
         }
     }
 
+    /// <summary>
+    /// A single row in a CellRepository
+    /// </summary>
     internal class RepositoryRow
     {
         /// <summary>
@@ -118,6 +139,13 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// <returns></returns>
         public IEnumerable<RepositoryValue> Columns() =>
             Enumerable.Range(0, (int)_repository.MaxCols + 1).Select(x => _repository[(uint)x, _row]);
+
+        /// <summary>
+        /// The value of a certain column
+        /// </summary>
+        /// <param name="col">Which column, starting with 0</param>
+        /// <returns></returns>
+        public RepositoryValue this[uint col] => _repository[col,_row];
     }
 
     /// <summary>

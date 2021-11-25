@@ -21,6 +21,9 @@ namespace jcoliz.OfficeOpenXml.Serializer
         private readonly int _maxrow;
         private readonly ISharedStringMap _stringMap;
 
+        /// <summary>
+        /// The largest valid column value of the longest row
+        /// </summary>
         public uint MaxCols { get; private set; }
 
         /// <summary>

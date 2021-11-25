@@ -120,28 +120,22 @@ namespace jcoliz.OfficeOpenXml.Serializer
         /// <param name="row">Which row, from 1</param>
         /// <param name="maxcol">Largest valid column number, from 0</param>
         /// <returns>Cell values mapped to column number where found, from 0</returns>
-        private Dictionary<uint, string> ReadRow(Dictionary<string, Cell> cells, uint row, uint maxcol)
-        {
-            var result = new Dictionary<uint, string>();
-
-            for (uint col = 0; col <= maxcol; col++)
-            {
-                var value = string.Empty;
-                var celref = ColNameFor(col) + row;
-                var cell = cells.ContainsKey(celref) ? cells[celref] : null;
-                if (null != cell)
+        private Dictionary<uint, string> ReadRow(Dictionary<string, Cell> cells, uint row, uint maxcol) =>
+            Enumerable.Range(0, (int)maxcol + 1).ToDictionary(c => (uint)c, c =>
                 {
-                    if (cell.DataType != null && cell.DataType == CellValues.SharedString)
-                        value = FindSharedStringItem(cell.CellValue?.Text);
+                    var value = string.Empty;
+                    var celref = ColNameFor((uint)c) + row;
+                    var cell = cells.ContainsKey(celref) ? cells[celref] : null;
+                    if (null != cell)
+                    {
+                        if (cell.DataType != null && cell.DataType == CellValues.SharedString)
+                            value = FindSharedStringItem(cell.CellValue?.Text);
 
-                    else if (!string.IsNullOrEmpty(cell.CellValue?.Text))
-                        value = cell.CellValue.Text;
-                }
-                result[col] = value;
-            }
-
-            return result;
-        }
+                        else if (!string.IsNullOrEmpty(cell.CellValue?.Text))
+                            value = cell.CellValue.Text;
+                    }
+                    return value;
+                });
 
         /// <summary>
         /// Look up a string from the shared string table part

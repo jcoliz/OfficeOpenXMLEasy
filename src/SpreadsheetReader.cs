@@ -21,7 +21,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
     /// <remarks>
     /// Originally, I used EPPlus. However, that library has terms for commercial use.
     /// </remarks>
-    public class SpreadsheetReader : ISpreadsheetReader, ISharedStringMap
+    public class SpreadsheetReader : ISpreadsheetReader
     {
         #region ISpreadsheetReader (Public Interface)
 
@@ -79,7 +79,8 @@ namespace jcoliz.OfficeOpenXml.Serializer
             WorksheetPart worksheetPart = (WorksheetPart)(workbookpart.GetPartById(sheet.Id));
 
             // Transform cells into a repository we can work with more easily
-            var cells = new CellRepository(worksheetPart.Worksheet.Descendants<Cell>(),this);
+            var strings = new StringMap(spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault());
+            var cells = new CellRepository(worksheetPart.Worksheet.Descendants<Cell>(),strings);
             
             // Extract the headers
             var headers = cells.Rows().First().Columns().ToDictionary(c => c.Column, c => c.Value);
@@ -107,31 +108,39 @@ namespace jcoliz.OfficeOpenXml.Serializer
         #endregion
 
         #region Internals
-        /// <summary>
-        /// Look up a string from the shared string table part
-        /// </summary>
-        /// <param name="id">ID for the string, 0-based integer in string form</param>
-        /// <exception cref="ApplicationException">
-        /// Throws if there is no string table, or if the string can't be found.
-        /// </exception>
-        /// <returns>The string found</returns>
-        public string FindSharedStringItem(string id)
+
+        class StringMap : ISharedStringMap
         {
-            var shareStringPart = spreadSheet.WorkbookPart.GetPartsOfType<SharedStringTablePart>().SingleOrDefault();
+            private readonly SharedStringTable _table;
 
-            if (null == shareStringPart)
-                throw new ApplicationException("Shared string cell found, but no shared string table!");
+            public StringMap(SharedStringTablePart part)
+            {
+                if (null == part)
+                    throw new ApplicationException("Shared string cell found, but no shared string table!");
 
-            var table = shareStringPart.SharedStringTable;
-            var found = table.Skip(Convert.ToInt32(id));
-            var result = found.FirstOrDefault()?.InnerText;
+                _table = part.SharedStringTable;
 
-            if (null == result)
-                throw new ApplicationException($"Unable to find shared string reference for id {id}!");
+            }
 
-            return result;
+            /// <summary>
+            /// Look up a string from the shared string table part
+            /// </summary>
+            /// <param name="id">ID for the string, 0-based integer in string form</param>
+            /// <exception cref="ApplicationException">
+            /// Throws if there is no string table, or if the string can't be found.
+            /// </exception>
+            /// <returns>The string found</returns>
+            public string FindSharedStringItem(string id)
+            {
+                var found = _table.Skip(Convert.ToInt32(id));
+                var result = found.FirstOrDefault()?.InnerText;
+
+                if (null == result)
+                    throw new ApplicationException($"Unable to find shared string reference for id {id}!");
+
+                return result;
+            }
         }
-
         #endregion
 
         #region Static Internals

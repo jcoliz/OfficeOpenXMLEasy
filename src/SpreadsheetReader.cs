@@ -69,7 +69,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
                     return null;
             }
 
-            var sheet = matching.Single();
+            var sheet = matching.First();
             WorksheetPart worksheetPart = (WorksheetPart)(workbookpart.GetPartById(sheet.Id));
 
             // Transform cells into a repository we can work with more easily

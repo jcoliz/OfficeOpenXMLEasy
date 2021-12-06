@@ -174,6 +174,39 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
             var sheets = writer.SheetNames;
         }
 
+        [TestMethod]
+        public void MultipleSheets_Issue1()
+        {
+            // Given: A spreadsheet with two randomly-named sheets
+            var Items1 = new List<SimpleItem<string>>() { new SimpleItem<string>() { Key = "First Sheet1" }, new SimpleItem<string>() { Key = "First Sheet2" } };
+            var Items2 = new List<SimpleItem<string>>() { new SimpleItem<string>() { Key = "Second Sheet" } };
+
+            using var stream = new MemoryStream();
+            {
+                using var writer = new SpreadsheetWriter();
+                writer.Open(stream);
+                writer.Serialize(Items1, TestContext.TestName + "01");
+                writer.Serialize(Items2, TestContext.TestName + "02");
+            }
+
+            // (Write it to disk)
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var filename = $"Test-{TestContext.TestName}.xlsx";
+            File.Delete(filename);
+            using var outstream = File.OpenWrite(filename);
+            stream.CopyTo(outstream);
+            TestContext.AddResultFile(filename);
+
+            // When: Reading it back from a spreadsheet
+            var sheets = new List<string>();
+            var actual = WhenReadAsSpreadsheet<SimpleItem<string>>(stream, sheets);
+
+            // Then: The items from the first sheet are found
+            Assert.AreEqual(2,actual.Count());
+            Assert.AreEqual(2,actual.Where(x=>x.Key.StartsWith("First")).Count());
+        }
+
         public class ThirtyMembers
         {
             public int Member_01 { get; set; }

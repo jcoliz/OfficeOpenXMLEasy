@@ -5,7 +5,7 @@ This is a .NET Standard 2.1 library designed to make it easy to serialize C# obj
 [![Build+Test](https://github.com/jcoliz/OfficeOpenXMLEasy/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jcoliz/OfficeOpenXMLEasy/actions/workflows/dotnet.yml)
 [![Release](https://github.com/jcoliz/OfficeOpenXMLEasy/actions/workflows/release.yml/badge.svg)](https://github.com/jcoliz/OfficeOpenXMLEasy/actions/workflows/release.yml)
 [![Build Status](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_apis/build/status/jcoliz.OfficeOpenXMLEasy?branchName=main)](https://jcoliz.visualstudio.com/OfficeOpenXMLEasy/_build/latest?definitionId=23&branchName=main) 
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/jcoliz/OfficeOpenXMLEasy/23)
+[![Coverage](https://img.shields.io/azure-devops/coverage/jcoliz/OfficeOpenXMLEasy/23)](https://dev.azure.com/jcoliz/OfficeOpenXMLEasy/_build/latest/results?definitionId=23)
 [![Nuget](https://img.shields.io/nuget/v/jcoliz.OpenOfficeXml.Serializer)](https://www.nuget.org/packages/jcoliz.OpenOfficeXml.Serializer/)
 
 ## Background

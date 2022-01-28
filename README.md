@@ -18,7 +18,7 @@ a simple library to handle all the low-level details required by the [Office Ope
 ### Namespace
 
 ```c#
-using jcoliz.OpenOfficeXml.Serializer;
+using jcoliz.OfficeOpenXml.Serializer;
 ```
 
 ### Simple Serialization

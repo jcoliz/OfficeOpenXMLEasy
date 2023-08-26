@@ -153,6 +153,18 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         }
 
         [TestMethod]
+        public void SimpleWriteDecimalNullable()
+        {
+            // Given: A very simple item w/ nullable decimal member
+            var Items = new List<SimpleItem<decimal?>>() { new SimpleItem<decimal?>() { Key = 123.45m } };
+
+            // When: Writing it to a spreadsheet 
+            // And: Reading it back to a spreadsheet
+            // Then: The spreadsheet is valid, and contains the expected item
+            WriteThenReadBack(Items);
+        }
+
+        [TestMethod]
         public void SimpleWriteBoolean()
         {
             // Given: A very simple item w/ boolean member

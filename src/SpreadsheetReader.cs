@@ -136,7 +136,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         if (int.TryParse(kvp.Value, out int value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType == typeof(decimal))
+                    else if (property.PropertyType == typeof(decimal) || property.PropertyType == typeof(decimal?))
                     {
                         if (decimal.TryParse(kvp.Value, out decimal value))
                             property.SetValue(item, value);

@@ -129,6 +129,18 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
         }
 
         [TestMethod]
+        public void SimpleWriteInt32Nullable()
+        {
+            // Given: A very simple item w/ nullable int member
+            var Items = new List<SimpleItem<int?>>() { new SimpleItem<int?>() { Key = 12345 } };
+
+            // When: Writing it to a spreadsheet 
+            // And: Reading it back to a spreadsheet
+            // Then: The spreadsheet is valid, and contains the expected item
+            WriteThenReadBack(Items);
+        }
+
+        [TestMethod]
         public void SimpleWriteDecimal()
         {
             // Given: A very simple item w/ decimal member

@@ -131,7 +131,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         if ( double.TryParse(kvp.Value, out double dvalue) )
                             property.SetValue(item, DateTime.FromOADate(dvalue));
                     }
-                    else if (property.PropertyType == typeof(int))
+                    else if (property.PropertyType == typeof(int) || property.PropertyType == typeof(int?))
                     {
                         if (int.TryParse(kvp.Value, out int value))
                             property.SetValue(item, value);

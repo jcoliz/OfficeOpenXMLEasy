@@ -141,7 +141,7 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         if (decimal.TryParse(kvp.Value, out decimal value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType == typeof(bool))
+                    else if (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?))
                     {
                         // Bool is represented as 0/1.
                         // But maybe somettimes it will come in as true/false

@@ -176,6 +176,18 @@ namespace jcoliz.OfficeOpenXml.Serializer.Tests
             WriteThenReadBack(Items);
         }
 
+        [TestMethod]
+        public void SimpleWriteBooleanNullable()
+        {
+            // Given: A very simple item w/ boolean member
+            var Items = new List<SimpleItem<Boolean?>>() { new SimpleItem<Boolean?>() { Key = true } };
+
+            // When: Writing it to a spreadsheet 
+            // And: Reading it back to a spreadsheet
+            // Then: The spreadsheet is valid, and contains the expected item
+            WriteThenReadBack(Items);
+        }
+
         enum TestEnum { Invalid = 0, Good, Bad, Ugly };
 
         [TestMethod]

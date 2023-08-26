@@ -122,7 +122,13 @@ namespace jcoliz.OfficeOpenXml.Serializer
                 // Only operate on it if it has a setter
                 if (null != property?.SetMethod)
                 {
-                    if (property.PropertyType == typeof(DateTime))
+                    // Issue#2: Handle nullable types
+                    var type = property.PropertyType;
+                    var underlying = Nullable.GetUnderlyingType(type);
+                    if (underlying != null)
+                        type = underlying;
+
+                    if (type == typeof(DateTime))
                     {
                         // By the time datetimes get here, we expect them to be OADates.
                         // If the original source is an actual date type, that should
@@ -131,17 +137,17 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         if ( double.TryParse(kvp.Value, out double dvalue) )
                             property.SetValue(item, DateTime.FromOADate(dvalue));
                     }
-                    else if (property.PropertyType == typeof(int) || property.PropertyType == typeof(int?))
+                    else if (type == typeof(int))
                     {
                         if (int.TryParse(kvp.Value, out int value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType == typeof(decimal) || property.PropertyType == typeof(decimal?))
+                    else if (type == typeof(decimal))
                     {
                         if (decimal.TryParse(kvp.Value, out decimal value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?))
+                    else if (type == typeof(bool))
                     {
                         // Bool is represented as 0/1.
                         // But maybe somettimes it will come in as true/false
@@ -152,15 +158,15 @@ namespace jcoliz.OfficeOpenXml.Serializer
                         else if (bool.TryParse(kvp.Value, out bool value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType == typeof(string))
+                    else if (type == typeof(string))
                     {
                         var value = kvp.Value?.Trim();
                         if (!string.IsNullOrEmpty(value))
                             property.SetValue(item, value);
                     }
-                    else if (property.PropertyType.BaseType == typeof(Enum))
+                    else if (type.BaseType == typeof(Enum))
                     {
-                        if (Enum.TryParse(property.PropertyType, kvp.Value, out object value))
+                        if (Enum.TryParse(type, kvp.Value, out object value))
                             property.SetValue(item, value);
                     }
                 }
